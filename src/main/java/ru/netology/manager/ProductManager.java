@@ -1,6 +1,7 @@
 package ru.netology.manager;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.jetbrains.annotations.NotNull;
 import ru.netology.domain.Book;
 import ru.netology.domain.Phone;
 import ru.netology.domain.Product;
@@ -22,7 +23,7 @@ public class ProductManager {
         return found;
     }
 
-    private boolean matches(Product product, String search) {
+    private boolean matches(@NotNull Product product, String search) {
         if (product.getName().equalsIgnoreCase(search)) {
             return true;
         }
@@ -39,6 +40,14 @@ public class ProductManager {
 
     public void add(Product item) {
         repository.save(item);
+    }
+
+    public void removeById(int id) {
+        repository.removeById(id);
+    }
+
+    public Product[] findAll() {
+        return repository.findAll();
     }
 
 }

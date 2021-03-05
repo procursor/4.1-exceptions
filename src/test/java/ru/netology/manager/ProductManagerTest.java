@@ -2,18 +2,20 @@ package ru.netology.manager;
 
 import static org.apache.commons.lang3.ArrayUtils.isEmpty;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.netology.domain.Book;
 import ru.netology.domain.Phone;
 import ru.netology.domain.Product;
+import ru.netology.repository.NotFoundException;
 import ru.netology.repository.ProductRepository;
 
 class ProductManagerTest {
-    private final ProductRepository repo = new ProductRepository();
-    private final ProductManager manager = new ProductManager(repo);
+    final ProductManager manager = new ProductManager(new ProductRepository());
 
     final Book book1;
     final Book book2;
@@ -25,6 +27,16 @@ class ProductManagerTest {
         phone1 = new Phone(2, "быстрый", -1, "Apple");
         book2 = new Book(3, "Java", 300, "Android");
         phone2 = new Phone(4, "медленный", 400, "java");
+    }
+
+    @Test
+    @DisplayName("Should throw exception & print stack trace")
+    void shouldThrowExInRemoveByIdIfIdNotExists() {
+        var id = 0;
+        NotFoundException thrown = assertThrows(NotFoundException.class,
+          () -> manager.removeById(id)
+        );
+        thrown.printStackTrace();
     }
 
     @Test
@@ -42,6 +54,16 @@ class ProductManagerTest {
     }
 
     @Test
+    void shouldRemoveByIdIfExists() {
+        var expected = new Product[] {book2, phone1, phone2};
+
+        manager.removeById(1);
+
+        assertArrayEquals(expected, manager.findAll());
+    }
+
+    /* provide 100% */
+    @Test
     void shouldFindByNameOrAuthor() {
         var actual = manager.searchBy("быстрый");
         var expected = new Product[] {book1, phone1};
@@ -55,25 +77,6 @@ class ProductManagerTest {
         var expected = new Product[] {book2, phone2};
 
         assertArrayEquals(expected, actual);
-    }
-
-    /* 100% */
-    @Test
-    void shouldRemoveByIdIfExists() {
-        var expected = new Product[] {book2, phone1, phone2};
-
-        repo.removeById(1);
-
-        assertArrayEquals(expected, repo.findAll());
-    }
-
-    @Test
-    void shouldNotRemoveByIdIfNotExists() {
-        var expected = new Product[] {book1, book2, phone1, phone2};
-
-        repo.removeById(0);
-
-        assertArrayEquals(expected, repo.findAll());
     }
 
 }

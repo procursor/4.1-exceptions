@@ -3,14 +3,19 @@ package ru.netology.repository;
 import static org.apache.commons.lang3.ArrayUtils.add;
 import static org.apache.commons.lang3.ArrayUtils.removeElement;
 
-import org.apache.commons.lang3.ArrayUtils;
 import ru.netology.domain.Product;
 
 public class ProductRepository {
     private Product[] products = new Product[0];
 
-    public void save(Product item) {
-        this.products = add(products, item);
+    public void removeById(int id) {
+        var p = findById(id);
+        if (p == null) {
+            throw new NotFoundException(id);
+        }
+        else {
+            products = removeElement(products, p);
+        }
     }
 
     public Product findById(int id) {
@@ -22,12 +27,11 @@ public class ProductRepository {
         return null;
     }
 
-    public void removeById(int id) {
-        products = removeElement(products, findById(id));
+    public void save(Product item) {
+        this.products = add(products, item);
     }
 
     public Product[] findAll() {
-        return ArrayUtils.clone(products);
+        return products.clone();
     }
 }
-
