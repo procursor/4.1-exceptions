@@ -18,4 +18,5 @@ public class IllegalArgumentException extends Exception {
     public IllegalArgumentException(String message, Throwable cause) {
         super(message, cause);
     }
+
 }

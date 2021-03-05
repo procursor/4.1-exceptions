@@ -1,7 +1,7 @@
 package ru.netology.manager;
 
+import java.util.logging.Logger;
 import org.apache.commons.lang3.ArrayUtils;
-import org.jetbrains.annotations.NotNull;
 import ru.netology.domain.Book;
 import ru.netology.domain.Phone;
 import ru.netology.domain.Product;
@@ -9,6 +9,7 @@ import ru.netology.repository.NotFoundException;
 import ru.netology.repository.ProductRepository;
 
 public class ProductManager {
+    private final static Logger LOGGER = Logger.getLogger(Logger.class.getName());
     private final ProductRepository repository;
 
     public ProductManager(ProductRepository repository) {
@@ -48,21 +49,24 @@ public class ProductManager {
             repository.removeById(id);
         } catch (NotFoundException e) {
             handleNFE(id, e);
+            throw new IllegalArgumentException("product with id=" + id + " can't be removed", e);
         }
     }
 
-    private void handleNFE(int id, Exception cause) throws IllegalArgumentException {
+    private void handleNFE(int id, Exception e) {
+        LOGGER.severe("Something wrong happened at '" +
+                        e.getStackTrace()[0].getClassName() +
+                        "." +
+                        e.getStackTrace()[0].getMethodName() +
+                        "': 'NotFoundException' has been caught"
+        );
         var msg = new StringBuilder(
-          "Something wrong happened at 'repository.removeById(id)': " +
-            "NotFoundException has been caught\n\n" +
-
-            "Current list of Products:\n" +
+            "\nCurrent list of Products:\n" +
             "-------------------------\n");
         for (var p : this.findAll()) {
             msg.append(p.toString()).append('\n');
         }
-        System.err.print(msg.toString());
-        throw new IllegalArgumentException("product with id=" + id + " can't be removed", cause);
+        LOGGER.info(msg.toString());
     }
 
     public Product[] findAll() {

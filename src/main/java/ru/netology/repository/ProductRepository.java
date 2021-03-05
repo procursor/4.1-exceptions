@@ -24,6 +24,7 @@ public class ProductRepository {
                 return item;
             }
         }
+        // Extremely bad pattern. Null should never be used as a legal return value!
         return null;
     }
 
